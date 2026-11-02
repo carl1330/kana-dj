@@ -48,7 +48,11 @@ function showScreen(screen) {
 let roundLength = "all";
 
 function buildDeck(mode) {
-  const deck = shuffle(KANA[mode]);
+  let pool = KANA[mode];
+  if (document.getElementById("tenten-check").checked) {
+    pool = pool.concat(TENTEN[mode]);
+  }
+  const deck = shuffle(pool);
   return roundLength === "all" ? deck : deck.slice(0, Number(roundLength));
 }
 
@@ -130,7 +134,7 @@ guessForm.addEventListener("submit", (e) => {
   const card = current();
   const accepted = [card.romaji];
   // common alternate spellings
-  const alts = { shi: ["si"], chi: ["ti"], tsu: ["tu"], fu: ["hu"], ji: ["zi"] };
+  const alts = { shi: ["si"], chi: ["ti"], tsu: ["tu"], fu: ["hu"], ji: ["zi", "di"], zu: ["du"] };
   if (alts[card.romaji]) accepted.push(...alts[card.romaji]);
 
   if (accepted.includes(guess)) {
@@ -169,7 +173,7 @@ function openMnemonic(card, mode) {
   modalKana.textContent = card.char;
   modalRomaji.textContent = card.romaji;
   modalMnemonic.textContent = card.mnemonic;
-  modalChart.src = tileSrc(state.mode, card.romaji);
+  modalChart.src = tileSrc(state.mode, card.tile || card.romaji);
   modalChart.alt = `Tofugu mnemonic for ${card.char} (${card.romaji})`;
   modal.classList.remove("hidden");
 }
