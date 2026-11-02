@@ -45,10 +45,17 @@ function showScreen(screen) {
   screen.classList.add("active");
 }
 
+let roundLength = "all";
+
+function buildDeck(mode) {
+  const deck = shuffle(KANA[mode]);
+  return roundLength === "all" ? deck : deck.slice(0, Number(roundLength));
+}
+
 function startGame(mode, cards) {
   state = {
     mode,
-    deck: shuffle(cards || KANA[mode]),
+    deck: cards ? shuffle(cards) : buildDeck(mode),
     index: 0,
     wrongInRow: 0,
     streak: 0,
@@ -207,6 +214,14 @@ function endGame() {
   replayFailedBtn.classList.toggle("hidden", state.failed.length === 0);
   showScreen(resultsScreen);
 }
+
+// length picker
+document.querySelectorAll(".length-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    roundLength = btn.dataset.length;
+    document.querySelectorAll(".length-btn").forEach((b) => b.classList.toggle("active", b === btn));
+  });
+});
 
 // menu buttons
 document.querySelectorAll(".mode-btn[data-mode]").forEach((btn) => {
