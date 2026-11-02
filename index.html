@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kana DJ 🎧</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- floating musical notes background -->
+  <div class="notes-bg" aria-hidden="true">
+    <span>🎵</span><span>🎶</span><span>🎵</span><span>🎶</span><span>🎵</span><span>🎶</span><span>🎵</span><span>🎶</span>
+  </div>
+
+  <!-- ===== MENU SCREEN ===== -->
+  <section id="menu-screen" class="screen active">
+    <div class="dj-booth">
+      <div class="dj-character bob">
+        <div class="headphones"></div>
+        <div class="dj-face">
+          <div class="eye left"></div>
+          <div class="eye right"></div>
+          <div class="mouth"></div>
+          <div class="blush left"></div>
+          <div class="blush right"></div>
+        </div>
+      </div>
+      <div class="turntable-row">
+        <div class="turntable">
+          <div class="vinyl spin"><div class="vinyl-label">あ</div></div>
+          <div class="tonearm"></div>
+        </div>
+        <div class="mixer">
+          <div class="fader"></div>
+          <div class="fader"></div>
+          <div class="fader"></div>
+        </div>
+        <div class="turntable">
+          <div class="vinyl spin reverse"><div class="vinyl-label">ア</div></div>
+          <div class="tonearm"></div>
+        </div>
+      </div>
+    </div>
+
+    <h1 class="logo">KANA DJ</h1>
+    <p class="tagline">Drop the beat, learn the kana! 🎧</p>
+
+    <div class="mode-buttons">
+      <button class="mode-btn hira" data-mode="hiragana">
+        <span class="mode-kana">あ</span>
+        <span class="mode-name">Hiragana</span>
+      </button>
+      <button class="mode-btn kata" data-mode="katakana">
+        <span class="mode-kana">ア</span>
+        <span class="mode-name">Katakana</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ===== GAME SCREEN ===== -->
+  <section id="game-screen" class="screen">
+    <header class="game-header">
+      <button id="back-btn" class="small-btn">⏏ Eject</button>
+      <div class="scoreboard">
+        <div class="score-chip">🔥 Streak <span id="streak">0</span></div>
+        <div class="score-chip">✅ <span id="correct-count">0</span></div>
+        <div class="score-chip">💔 <span id="failed-count">0</span></div>
+      </div>
+      <div class="progress-wrap">
+        <div id="progress-bar"></div>
+      </div>
+    </header>
+
+    <div class="stage">
+      <div class="dj-character mini bob" id="game-dj">
+        <div class="headphones"></div>
+        <div class="dj-face">
+          <div class="eye left"></div>
+          <div class="eye right"></div>
+          <div class="mouth"></div>
+          <div class="blush left"></div>
+          <div class="blush right"></div>
+        </div>
+      </div>
+
+      <div class="record-area">
+        <div class="vinyl big spin" id="kana-record">
+          <div class="vinyl-label big-label">
+            <span id="kana-char">あ</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="strikes" id="strikes" aria-label="wrong guesses">
+        <span class="strike">💿</span><span class="strike">💿</span><span class="strike">💿</span>
+      </div>
+
+      <form id="guess-form" autocomplete="off">
+        <input id="guess-input" type="text" inputmode="latin" maxlength="4"
+               placeholder="type the romaji…" autocapitalize="off" autocorrect="off" spellcheck="false">
+        <button type="submit" class="drop-btn">DROP IT 🎚️</button>
+      </form>
+
+      <p id="feedback" class="feedback"></p>
+    </div>
+  </section>
+
+  <!-- ===== MNEMONIC MODAL ===== -->
+  <div id="mnemonic-modal" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-dj">
+        <div class="dj-character mini sad">
+          <div class="headphones"></div>
+          <div class="dj-face">
+            <div class="eye left sad-eye"></div>
+            <div class="eye right sad-eye"></div>
+            <div class="mouth sad-mouth"></div>
+          </div>
+        </div>
+      </div>
+      <h2>Record scratch! 📀💥</h2>
+      <p class="modal-sub">That one's <span id="modal-kana">あ</span> = “<span id="modal-romaji">a</span>”</p>
+      <div class="mnemonic-box">
+        <p id="modal-mnemonic"></p>
+      </div>
+      <img id="mnemonic-chart" class="chart-img" alt="Kana mnemonic tile by Tofugu" loading="lazy">
+      <p class="chart-credit">Mnemonic chart by <a href="https://www.tofugu.com" target="_blank" rel="noopener">Tofugu</a></p>
+      <button id="modal-continue" class="drop-btn">Back to the decks 🎧</button>
+    </div>
+  </div>
+
+  <!-- ===== RESULTS SCREEN ===== -->
+  <section id="results-screen" class="screen">
+    <h1 class="logo small">SET FINISHED! 🎉</h1>
+    <div class="results-card">
+      <p class="big-stat">✅ <span id="final-correct">0</span> nailed</p>
+      <p class="big-stat">💔 <span id="final-failed">0</span> scratched</p>
+      <div id="failed-list" class="failed-list"></div>
+    </div>
+    <div class="mode-buttons">
+      <button id="replay-btn" class="mode-btn hira"><span class="mode-name">Spin again 🔁</span></button>
+      <button id="menu-btn" class="mode-btn kata"><span class="mode-name">Main menu 🏠</span></button>
+    </div>
+  </section>
+
+  <script src="kana-data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
