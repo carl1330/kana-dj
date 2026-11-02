@@ -104,6 +104,8 @@
         <button type="submit" class="drop-btn">DROP IT 🎚️</button>
       </form>
 
+      <button id="hint-btn" class="small-btn hint-btn" type="button">💡 Show mnemonic</button>
+
       <p id="feedback" class="feedback"></p>
     </div>
   </section>
@@ -121,7 +123,7 @@
           </div>
         </div>
       </div>
-      <h2>Record scratch! 📀💥</h2>
+      <h2 id="modal-title">Record scratch! 📀💥</h2>
       <p class="modal-sub">That one's <span id="modal-kana">あ</span> = “<span id="modal-romaji">a</span>”</p>
       <div class="mnemonic-box">
         <p id="modal-mnemonic"></p>
@@ -141,6 +143,7 @@
       <div id="failed-list" class="failed-list"></div>
     </div>
     <div class="mode-buttons">
+      <button id="replay-failed-btn" class="mode-btn hira hidden"><span class="mode-name">Fix the scratches 🩹</span></button>
       <button id="replay-btn" class="mode-btn hira"><span class="mode-name">Spin again 🔁</span></button>
       <button id="menu-btn" class="mode-btn kata"><span class="mode-name">Main menu 🏠</span></button>
     </div>

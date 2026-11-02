@@ -345,6 +345,9 @@ body {
 }
 .small-btn:active { transform: translateY(3px); box-shadow: none; }
 
+.hint-btn { margin-top: 0.6rem; }
+.mode-btn.hidden { display: none; }
+
 .scoreboard { display: flex; gap: 0.5rem; }
 .score-chip {
   background: rgba(255,255,255,0.15);

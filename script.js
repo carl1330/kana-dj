@@ -22,6 +22,9 @@ const modalRomaji = document.getElementById("modal-romaji");
 const modalMnemonic = document.getElementById("modal-mnemonic");
 const modalChart = document.getElementById("mnemonic-chart");
 const modalContinue = document.getElementById("modal-continue");
+const modalTitle = document.getElementById("modal-title");
+const hintBtn = document.getElementById("hint-btn");
+const replayFailedBtn = document.getElementById("replay-failed-btn");
 
 const HYPE = ["Sick drop! 🔥", "You're on fire! 🎶", "Crowd goes wild! 🙌", "Smooth mix! 🎚️", "Banger!! 💿", "Encore! Encore! ✨"];
 const OOPS = ["Off beat! Try again 🎧", "Needle slipped! 🫨", "Hmm, remix that guess 🌀"];
@@ -42,10 +45,10 @@ function showScreen(screen) {
   screen.classList.add("active");
 }
 
-function startGame(mode) {
+function startGame(mode, cards) {
   state = {
     mode,
-    deck: shuffle(KANA[mode]),
+    deck: shuffle(cards || KANA[mode]),
     index: 0,
     wrongInRow: 0,
     streak: 0,
@@ -151,9 +154,11 @@ guessForm.addEventListener("submit", (e) => {
   }
 });
 
-function failCard(card) {
-  state.failed.push(card);
-  djSad();
+let modalMode = "fail";
+
+function openMnemonic(card, mode) {
+  modalMode = mode;
+  modalTitle.textContent = mode === "hint" ? "Cheat sheet! 💡" : "Record scratch! 📀💥";
   modalKana.textContent = card.char;
   modalRomaji.textContent = card.romaji;
   modalMnemonic.textContent = card.mnemonic;
@@ -162,9 +167,24 @@ function failCard(card) {
   modal.classList.remove("hidden");
 }
 
+function failCard(card) {
+  state.failed.push(card);
+  djSad();
+  openMnemonic(card, "fail");
+}
+
 modalContinue.addEventListener("click", () => {
   modal.classList.add("hidden");
-  nextCard();
+  if (modalMode === "fail") {
+    nextCard();
+  } else {
+    guessInput.focus();
+  }
+});
+
+hintBtn.addEventListener("click", () => {
+  if (!state) return;
+  openMnemonic(current(), "hint");
 });
 
 function endGame() {
@@ -184,6 +204,7 @@ function endGame() {
       list.appendChild(chip);
     });
   }
+  replayFailedBtn.classList.toggle("hidden", state.failed.length === 0);
   showScreen(resultsScreen);
 }
 
@@ -198,4 +219,5 @@ document.getElementById("back-btn").addEventListener("click", () => {
 });
 
 document.getElementById("replay-btn").addEventListener("click", () => startGame(state.mode));
+replayFailedBtn.addEventListener("click", () => startGame(state.mode, state.failed));
 document.getElementById("menu-btn").addEventListener("click", () => showScreen(menuScreen));
