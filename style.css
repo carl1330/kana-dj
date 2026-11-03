@@ -387,6 +387,43 @@ body {
   accent-color: var(--pink);
   cursor: pointer;
 }
+
+/* ===== leaderboard ===== */
+.board-btn { margin-top: 1rem; }
+
+.save-score {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0.8rem 0;
+}
+.save-score.hidden { display: none; }
+.save-score input {
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 1rem;
+  border: 3px solid var(--ink);
+  border-radius: 12px;
+  padding: 0.35rem 0.7rem;
+  width: 10rem;
+}
+
+.leaderboard { margin-top: 0.6rem; text-align: left; }
+.board-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: 10px;
+  font-weight: 700;
+}
+.board-row:nth-child(odd) { background: rgba(255,255,255,0.12); }
+.board-rank { width: 2rem; }
+.board-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.board-meta { opacity: 0.75; font-size: 0.85rem; }
+.board-score { font-weight: 800; color: var(--yellow); }
+.board-empty { text-align: center; opacity: 0.8; }
+.score-stat { color: var(--yellow); }
 .mode-btn.hidden { display: none; }
 
 .scoreboard { display: flex; gap: 0.5rem; }

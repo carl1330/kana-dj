@@ -70,6 +70,19 @@
         <span class="mode-name">Katakana</span>
       </button>
     </div>
+
+    <button id="leaderboard-btn" class="small-btn board-btn">🏆 Top DJs</button>
+  </section>
+
+  <!-- ===== LEADERBOARD SCREEN ===== -->
+  <section id="leaderboard-screen" class="screen">
+    <h1 class="logo small">TOP DJS 🏆</h1>
+    <div class="results-card">
+      <div id="menu-board" class="leaderboard"></div>
+    </div>
+    <div class="mode-buttons">
+      <button id="board-back-btn" class="mode-btn kata"><span class="mode-name">Main menu 🏠</span></button>
+    </div>
   </section>
 
   <!-- ===== GAME SCREEN ===== -->
@@ -77,6 +90,7 @@
     <header class="game-header">
       <button id="back-btn" class="small-btn">⏏ Eject</button>
       <div class="scoreboard">
+        <div class="score-chip">🎯 <span id="score">0</span></div>
         <div class="score-chip">🔥 Streak <span id="streak">0</span></div>
         <div class="score-chip">✅ <span id="correct-count">0</span></div>
         <div class="score-chip">💔 <span id="failed-count">0</span></div>
@@ -150,9 +164,15 @@
   <section id="results-screen" class="screen">
     <h1 class="logo small">SET FINISHED! 🎉</h1>
     <div class="results-card">
+      <p class="big-stat score-stat">🎯 <span id="final-score">0</span> pts</p>
       <p class="big-stat">✅ <span id="final-correct">0</span> nailed</p>
       <p class="big-stat">💔 <span id="final-failed">0</span> scratched</p>
       <div id="failed-list" class="failed-list"></div>
+      <form id="save-score-form" class="save-score">
+        <input id="player-name" type="text" maxlength="12" placeholder="DJ name…" autocomplete="off">
+        <button type="submit" class="small-btn">Save score 🏆</button>
+      </form>
+      <div id="results-board" class="leaderboard"></div>
     </div>
     <div class="mode-buttons">
       <button id="replay-failed-btn" class="mode-btn hira hidden"><span class="mode-name">Fix the scratches 🩹</span></button>

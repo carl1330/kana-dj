@@ -10,6 +10,7 @@ const guessForm = document.getElementById("guess-form");
 const guessInput = document.getElementById("guess-input");
 const feedback = document.getElementById("feedback");
 const strikesEl = document.getElementById("strikes");
+const scoreEl = document.getElementById("score");
 const streakEl = document.getElementById("streak");
 const correctCountEl = document.getElementById("correct-count");
 const failedCountEl = document.getElementById("failed-count");
@@ -41,7 +42,7 @@ function shuffle(arr) {
 }
 
 function showScreen(screen) {
-  [menuScreen, gameScreen, resultsScreen].forEach((s) => s.classList.remove("active"));
+  document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active"));
   screen.classList.add("active");
 }
 
@@ -66,6 +67,9 @@ function startGame(mode, cards) {
     correct: 0,
     failed: [],
     missed: [],
+    score: 0,
+    cardStart: 0,
+    hintUsed: false,
   };
   showScreen(gameScreen);
   renderCard();
@@ -84,6 +88,8 @@ function renderCard() {
   guessInput.focus();
   updateStrikes();
   updateHud();
+  state.cardStart = performance.now();
+  state.hintUsed = false;
 
   // restart the spin so each new record "drops in"
   kanaRecord.classList.remove("drop-in");
@@ -92,6 +98,7 @@ function renderCard() {
 }
 
 function updateHud() {
+  scoreEl.textContent = state.score;
   streakEl.textContent = state.streak;
   correctCountEl.textContent = state.correct;
   failedCountEl.textContent = state.failed.length;
@@ -126,6 +133,17 @@ function nextCard() {
   }
 }
 
+// base points by attempt (1st/2nd/3rd try), plus a speed bonus that
+// decays 10 pts/second; using the hint halves the card's points
+function cardPoints() {
+  const base = [100, 50, 25][state.wrongInRow];
+  const elapsed = (performance.now() - state.cardStart) / 1000;
+  const speedBonus = Math.max(0, 50 - Math.floor(elapsed * 10));
+  let pts = base + speedBonus;
+  if (state.hintUsed) pts = Math.floor(pts / 2);
+  return pts;
+}
+
 guessForm.addEventListener("submit", (e) => {
   e.preventDefault();
   if (!state || !modal.classList.contains("hidden")) return;
@@ -141,6 +159,7 @@ guessForm.addEventListener("submit", (e) => {
   if (accepted.includes(guess)) {
     state.correct++;
     state.streak++;
+    state.score += cardPoints();
     feedback.textContent = HYPE[Math.floor(Math.random() * HYPE.length)];
     feedback.className = "feedback good";
     djParty();
@@ -197,10 +216,65 @@ modalContinue.addEventListener("click", () => {
 
 hintBtn.addEventListener("click", () => {
   if (!state) return;
+  state.hintUsed = true;
   openMnemonic(current(), "hint");
 });
 
+// ===== leaderboard (localStorage) =====
+const BOARD_KEY = "kanaDjLeaderboard";
+const NAME_KEY = "kanaDjName";
+
+function loadBoard() {
+  try {
+    return JSON.parse(localStorage.getItem(BOARD_KEY)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function saveBoard(board) {
+  localStorage.setItem(BOARD_KEY, JSON.stringify(board));
+}
+
+function renderBoard(el) {
+  const board = loadBoard();
+  el.innerHTML = "";
+  if (!board.length) {
+    el.innerHTML = '<p class="board-empty">No scores yet — drop a set! 🎧</p>';
+    return;
+  }
+  board.forEach((entry, i) => {
+    const row = document.createElement("div");
+    row.className = "board-row";
+    const medal = ["🥇", "🥈", "🥉"][i] || `${i + 1}.`;
+    row.innerHTML = `<span class="board-rank">${medal}</span>
+      <span class="board-name"></span>
+      <span class="board-meta">${entry.mode === "hiragana" ? "あ" : "ア"} ×${entry.cards}</span>
+      <span class="board-score">${entry.score}</span>`;
+    row.querySelector(".board-name").textContent = entry.name;
+    el.appendChild(row);
+  });
+}
+
+document.getElementById("save-score-form").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const nameInput = document.getElementById("player-name");
+  const name = nameInput.value.trim() || "DJ Anon";
+  localStorage.setItem(NAME_KEY, name);
+  const board = loadBoard();
+  board.push({ name, score: state.score, mode: state.mode, cards: state.deck.length, date: new Date().toISOString().slice(0, 10) });
+  board.sort((a, b) => b.score - a.score);
+  saveBoard(board.slice(0, 10));
+  e.target.classList.add("hidden");
+  renderBoard(document.getElementById("results-board"));
+});
+
 function endGame() {
+  document.getElementById("final-score").textContent = state.score;
+  const saveForm = document.getElementById("save-score-form");
+  saveForm.classList.remove("hidden");
+  document.getElementById("player-name").value = localStorage.getItem(NAME_KEY) || "";
+  renderBoard(document.getElementById("results-board"));
   document.getElementById("final-correct").textContent = state.correct;
   document.getElementById("final-failed").textContent = state.missed.length;
   const list = document.getElementById("failed-list");
@@ -238,6 +312,12 @@ document.getElementById("back-btn").addEventListener("click", () => {
   state = null;
   showScreen(menuScreen);
 });
+
+document.getElementById("leaderboard-btn").addEventListener("click", () => {
+  renderBoard(document.getElementById("menu-board"));
+  showScreen(document.getElementById("leaderboard-screen"));
+});
+document.getElementById("board-back-btn").addEventListener("click", () => showScreen(menuScreen));
 
 document.getElementById("replay-btn").addEventListener("click", () => startGame(state.mode));
 replayFailedBtn.addEventListener("click", () => startGame(state.mode, state.missed));
