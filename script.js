@@ -60,6 +60,8 @@ function buildDeck(mode) {
 function startGame(mode, cards) {
   state = {
     mode,
+    // leaderboard only accepts full rounds: the whole deck, not a slice or a missed-cards replay
+    full: !cards && roundLength === "all",
     deck: cards ? shuffle(cards) : buildDeck(mode),
     index: 0,
     wrongInRow: 0,
@@ -70,6 +72,8 @@ function startGame(mode, cards) {
     score: 0,
     cardStart: 0,
     hintUsed: false,
+    roundStart: performance.now(),
+    roundTime: 0,
   };
   showScreen(gameScreen);
   renderCard();
@@ -247,9 +251,20 @@ function renderBoard(el) {
     const row = document.createElement("div");
     row.className = "board-row";
     const medal = ["🥇", "🥈", "🥉"][i] || `${i + 1}.`;
+    const mm = Math.floor((entry.time || 0) / 60);
+    const ss = String((entry.time || 0) % 60).padStart(2, "0");
+    const stats = [
+      `${entry.mode === "hiragana" ? "あ" : "ア"} ×${entry.cards}`,
+      entry.time != null ? `⏱ ${mm}:${ss}` : null,
+      entry.misses != null ? `💔 ${entry.misses}` : null,
+      entry.accuracy != null ? `${entry.accuracy}%` : null,
+      entry.date,
+    ].filter(Boolean).join(" · ");
     row.innerHTML = `<span class="board-rank">${medal}</span>
-      <span class="board-name"></span>
-      <span class="board-meta">${entry.mode === "hiragana" ? "あ" : "ア"} ×${entry.cards}</span>
+      <span class="board-info">
+        <span class="board-name"></span>
+        <span class="board-meta">${stats}</span>
+      </span>
       <span class="board-score">${entry.score}</span>`;
     row.querySelector(".board-name").textContent = entry.name;
     el.appendChild(row);
@@ -262,7 +277,16 @@ document.getElementById("save-score-form").addEventListener("submit", (e) => {
   const name = nameInput.value.trim() || "DJ Anon";
   localStorage.setItem(NAME_KEY, name);
   const board = loadBoard();
-  board.push({ name, score: state.score, mode: state.mode, cards: state.deck.length, date: new Date().toISOString().slice(0, 10) });
+  board.push({
+    name,
+    score: state.score,
+    mode: state.mode,
+    cards: state.deck.length,
+    misses: state.missed.length,
+    accuracy: Math.round((state.correct / state.deck.length) * 100),
+    time: state.roundTime,
+    date: new Date().toISOString().slice(0, 10),
+  });
   board.sort((a, b) => b.score - a.score);
   saveBoard(board.slice(0, 10));
   e.target.classList.add("hidden");
@@ -270,9 +294,10 @@ document.getElementById("save-score-form").addEventListener("submit", (e) => {
 });
 
 function endGame() {
+  state.roundTime = Math.round((performance.now() - state.roundStart) / 1000);
   document.getElementById("final-score").textContent = state.score;
   const saveForm = document.getElementById("save-score-form");
-  saveForm.classList.remove("hidden");
+  saveForm.classList.toggle("hidden", !state.full);
   document.getElementById("player-name").value = localStorage.getItem(NAME_KEY) || "";
   renderBoard(document.getElementById("results-board"));
   document.getElementById("final-correct").textContent = state.correct;

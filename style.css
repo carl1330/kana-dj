@@ -419,8 +419,9 @@ body {
 }
 .board-row:nth-child(odd) { background: rgba(255,255,255,0.12); }
 .board-rank { width: 2rem; }
-.board-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.board-meta { opacity: 0.75; font-size: 0.85rem; }
+.board-info { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.board-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.board-meta { opacity: 0.75; font-size: 0.8rem; font-weight: 600; }
 .board-score { font-weight: 800; color: var(--yellow); }
 .board-empty { text-align: center; opacity: 0.8; }
 .score-stat { color: var(--yellow); }
