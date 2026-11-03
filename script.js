@@ -65,6 +65,7 @@ function startGame(mode, cards) {
     streak: 0,
     correct: 0,
     failed: [],
+    missed: [],
   };
   showScreen(gameScreen);
   renderCard();
@@ -148,6 +149,7 @@ guessForm.addEventListener("submit", (e) => {
   } else {
     state.wrongInRow++;
     state.streak = 0;
+    if (!state.missed.includes(card)) state.missed.push(card);
     updateStrikes();
     updateHud();
     if (state.wrongInRow >= 3) {
@@ -200,22 +202,22 @@ hintBtn.addEventListener("click", () => {
 
 function endGame() {
   document.getElementById("final-correct").textContent = state.correct;
-  document.getElementById("final-failed").textContent = state.failed.length;
+  document.getElementById("final-failed").textContent = state.missed.length;
   const list = document.getElementById("failed-list");
   list.innerHTML = "";
-  if (state.failed.length) {
+  if (state.missed.length) {
     const title = document.createElement("p");
     title.className = "failed-title";
     title.textContent = "Scratched records to practice:";
     list.appendChild(title);
-    state.failed.forEach((card) => {
+    state.missed.forEach((card) => {
       const chip = document.createElement("span");
       chip.className = "failed-chip";
       chip.textContent = `${card.char} = ${card.romaji}`;
       list.appendChild(chip);
     });
   }
-  replayFailedBtn.classList.toggle("hidden", state.failed.length === 0);
+  replayFailedBtn.classList.toggle("hidden", state.missed.length === 0);
   showScreen(resultsScreen);
 }
 
@@ -238,5 +240,5 @@ document.getElementById("back-btn").addEventListener("click", () => {
 });
 
 document.getElementById("replay-btn").addEventListener("click", () => startGame(state.mode));
-replayFailedBtn.addEventListener("click", () => startGame(state.mode, state.failed));
+replayFailedBtn.addEventListener("click", () => startGame(state.mode, state.missed));
 document.getElementById("menu-btn").addEventListener("click", () => showScreen(menuScreen));
