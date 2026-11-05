@@ -280,7 +280,9 @@ body {
 .big-label span {
   font-size: clamp(3.5rem, 14vw, 6rem);
   color: var(--ink);
-  text-shadow: 2px 2px 0 rgba(255,255,255,0.5);
+  -webkit-text-stroke: 2px #fff;
+  paint-order: stroke fill;
+  text-shadow: 0 0 6px rgba(255,255,255,0.8), 2px 2px 0 rgba(255,255,255,0.5);
   /* keep the kana readable while the record spins */
   animation: spin 7s linear infinite reverse;
   display: inline-block;
