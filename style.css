@@ -287,11 +287,6 @@ body {
   animation: spin 7s linear infinite reverse;
   display: inline-block;
 }
-.drop-in { animation: spin 7s linear infinite, dropIn 0.45s ease-out; }
-@keyframes dropIn {
-  from { scale: 0.3; opacity: 0; }
-  to   { scale: 1; opacity: 1; }
-}
 .shake { animation: spin 7s linear infinite, recShake 0.35s ease-in-out; }
 @keyframes recShake {
   0%, 100% { translate: 0 0; }

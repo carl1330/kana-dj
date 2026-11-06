@@ -94,11 +94,6 @@ function renderCard() {
   updateHud();
   state.cardStart = performance.now();
   state.hintUsed = false;
-
-  // restart the spin so each new record "drops in"
-  kanaRecord.classList.remove("drop-in");
-  void kanaRecord.offsetWidth;
-  kanaRecord.classList.add("drop-in");
 }
 
 function updateHud() {
